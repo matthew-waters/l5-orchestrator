@@ -1,0 +1,20 @@
+[project]
+name = "l5-orchestrator"
+version = "0.1.0"
+description = "Spark Job Orchestrator MVP scaffold"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "sqlalchemy",
+  "boto3",
+  "python-multipart",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uvicorn]
+factory = false
