@@ -11,6 +11,14 @@ from src.domain.services.artifact_service import ArtifactService
 router = APIRouter(prefix="/artifacts", tags=["artifacts"])
 
 
+@router.get("", response_model=list[ArtifactRead])
+def list_artifacts(
+    tenant=Depends(get_current_tenant),
+    service: ArtifactService = Depends(ArtifactService),
+) -> list[ArtifactRead]:
+    return list(service.list(tenant_id=tenant.tenant_id))
+
+
 @router.post("", response_model=ArtifactRead, status_code=201)
 def upload_artifact(
     file: UploadFile = File(...),
