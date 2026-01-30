@@ -7,7 +7,6 @@ import logging
 from src.domain.planning.anchor_snapshots import capture_anchor_snapshots
 from src.domain.planning.forecast_refresh import refresh_forecasts
 from src.domain.planning.occurrence_generation import generate_occurrences
-from src.domain.planning.plan_snapshots import capture_plan_snapshots
 from src.domain.planning.planning import plan_occurrences
 from src.domain.planning.rescheduling import reschedule_occurrences
 from src.domain.scheduler.task import ScheduledTask
@@ -28,5 +27,4 @@ class PlannerTickTask(ScheduledTask):
         capture_anchor_snapshots()
         plan_occurrences()
         reschedule_occurrences()
-        capture_plan_snapshots()
         logger.info("Planner tick completed")
