@@ -1,4 +1,4 @@
-"""Periodic scheduler worker entrypoint."""
+"""Always-on executor worker entrypoint."""
 
 from __future__ import annotations
 
@@ -8,9 +8,6 @@ import signal
 from threading import Event
 
 from dotenv import load_dotenv
-
-from src.domain.tasks.planning.planner_tick import PlannerTickTask
-from src.domain.scheduler.engine import SchedulerEngine
 
 
 def _get_int(name: str, default: int) -> int:
@@ -24,13 +21,7 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO)
     load_dotenv()
 
-    tick_seconds = _get_int("SCHEDULER_TICK_SECONDS", 30)
-    planner_interval = _get_int("PLANNER_TICK_INTERVAL_SECONDS", 1800)
-
-    tasks = [
-        PlannerTickTask(interval_seconds=planner_interval),
-    ]
-
+    poll_seconds = _get_int("EXECUTOR_POLL_SECONDS", 15)
     stop_event = Event()
 
     def _handle_signal(_: int, __: object) -> None:
@@ -39,7 +30,11 @@ def main() -> None:
     signal.signal(signal.SIGINT, _handle_signal)
     signal.signal(signal.SIGTERM, _handle_signal)
 
-    SchedulerEngine(tasks=tasks, tick_seconds=tick_seconds).run_forever(stop_event)
+    logging.info("Executor worker starting with poll=%ss", poll_seconds)
+    while not stop_event.is_set():
+        logging.info("Executor poll stub")
+        stop_event.wait(poll_seconds)
+    logging.info("Executor worker stopping")
 
 
 if __name__ == "__main__":
