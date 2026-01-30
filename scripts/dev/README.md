@@ -28,8 +28,8 @@ python -m scripts.dev.run_scheduler
 
 Env:
 
-- `SCHEDULER_TICK_SECONDS` (default `30`)
-- `PLANNER_TICK_INTERVAL_SECONDS` (default `1800`)
+- `SCHEDULER_TICK_MINUTES` (default `1`)
+- `PLANNER_TICK_INTERVAL_MINUTES` (default `30`)
 
 ## run_executor.py
 

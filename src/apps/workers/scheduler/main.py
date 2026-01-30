@@ -24,8 +24,10 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO)
     load_dotenv()
 
-    tick_seconds = _get_int("SCHEDULER_TICK_SECONDS", 30)
-    planner_interval = _get_int("PLANNER_TICK_INTERVAL_SECONDS", 1800)
+    tick_minutes = _get_int("SCHEDULER_TICK_MINUTES", 1)
+    planner_interval_minutes = _get_int("PLANNER_TICK_INTERVAL_MINUTES", 30)
+    tick_seconds = tick_minutes * 60
+    planner_interval = planner_interval_minutes * 60
 
     tasks = [
         PlannerTickTask(interval_seconds=planner_interval),
