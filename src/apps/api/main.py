@@ -2,7 +2,10 @@
 
 from fastapi import FastAPI
 
+from src.apps.api.routes.tenants import router as tenants_router
+
 app = FastAPI(title="L5 Orchestrator API")
+app.include_router(tenants_router)
 
 
 @app.get("/health")
