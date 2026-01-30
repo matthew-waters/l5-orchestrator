@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable
+from typing import Iterable
 
 from fastapi import Depends
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from src.adapters.db.models import AppArtifact, Fleet, Workload
@@ -12,6 +13,8 @@ from src.adapters.db.repositories.occurrence_repo import OccurrenceRepository
 from src.adapters.db.repositories.workload_repo import WorkloadRepository
 from src.adapters.db.session import get_db
 from src.domain.planning.occurrence_generation import generate_occurrences
+from src.domain.types.schedule_rules import ScheduleRules
+from src.domain.types.user_preferences import UserPreferences
 
 
 class WorkloadService:
@@ -38,11 +41,12 @@ class WorkloadService:
         tags_json: list[str] | None,
         artifact_id: int,
         fleet_template_id: int,
-        schedule_rules_json: dict[str, Any],
-        user_preferences_json: dict[str, Any],
+        schedule_rules_json: ScheduleRules,
+        user_preferences_json: UserPreferences,
         manual_runtime_seconds: int | None,
     ) -> Workload:
-        self._validate_schedule_rules(schedule_rules_json)
+        schedule_rules = self._validate_schedule_rules(schedule_rules_json)
+        user_preferences = self._validate_user_preferences(user_preferences_json)
         self._validate_artifact(tenant_id, artifact_id)
         self._validate_fleet(fleet_template_id)
 
@@ -53,8 +57,8 @@ class WorkloadService:
             tags_json=tags_json,
             artifact_id=artifact_id,
             fleet_template_id=fleet_template_id,
-            schedule_rules_json=schedule_rules_json,
-            user_preferences_json=user_preferences_json,
+            schedule_rules_json=schedule_rules.model_dump(),
+            user_preferences_json=user_preferences.model_dump(),
             manual_runtime_seconds=manual_runtime_seconds,
             is_active=True,
         )
@@ -64,19 +68,19 @@ class WorkloadService:
         self.occurrences.create_many(occurrences)
         return workload
 
-    def _validate_schedule_rules(self, rules: dict[str, Any]) -> None:
-        anchor = rules.get("anchor", {})
-        deadline = rules.get("deadline", {})
-        cron = anchor.get("cron")
-        timezone = anchor.get("timezone")
-        offset = deadline.get("offset_seconds")
+    def _validate_schedule_rules(self, rules: ScheduleRules) -> ScheduleRules:
+        try:
+            return ScheduleRules.model_validate(rules)
+        except ValidationError as exc:
+            raise ValueError("schedule_rules_json is invalid") from exc
 
-        if not isinstance(cron, str) or not cron:
-            raise ValueError("schedule_rules_json.anchor.cron is required")
-        if not isinstance(timezone, str) or not timezone:
-            raise ValueError("schedule_rules_json.anchor.timezone is required")
-        if not isinstance(offset, int) or offset <= 0:
-            raise ValueError("schedule_rules_json.deadline.offset_seconds must be > 0")
+    def _validate_user_preferences(
+        self, prefs: UserPreferences
+    ) -> UserPreferences:
+        try:
+            return UserPreferences.model_validate(prefs)
+        except ValidationError as exc:
+            raise ValueError("user_preferences_json is invalid") from exc
 
     def _validate_artifact(self, tenant_id: int, artifact_id: int) -> None:
         artifact = self.session.get(AppArtifact, artifact_id)

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from src.domain.types.schedule_rules import ScheduleRules
+from src.domain.types.user_preferences import UserPreferences
 
 
 class WorkloadCreate(BaseModel):
@@ -14,8 +16,8 @@ class WorkloadCreate(BaseModel):
     tags_json: list[str] | None = None
     artifact_id: int
     fleet_template_id: int
-    schedule_rules_json: dict[str, Any]
-    user_preferences_json: dict[str, Any]
+    schedule_rules_json: ScheduleRules
+    user_preferences_json: UserPreferences
     manual_runtime_seconds: int | None = None
 
 
@@ -29,8 +31,8 @@ class WorkloadRead(BaseModel):
     tags_json: list[str] | None = None
     artifact_id: int
     fleet_template_id: int
-    schedule_rules_json: dict[str, Any]
-    user_preferences_json: dict[str, Any]
+    schedule_rules_json: ScheduleRules
+    user_preferences_json: UserPreferences
     manual_runtime_seconds: int | None
     is_active: bool
     created_at: datetime
