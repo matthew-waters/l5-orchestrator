@@ -22,3 +22,8 @@ Adapters encapsulate connection details, persistence, and SDK usage.
 
 Common utilities and types used across layers (logging, time helpers,
 shared types, and small cross-cutting helpers).
+
+## API auth
+
+API requests should include an `X-API-Key` header. The server hashes the key
+and resolves the tenant before handling tenant-scoped routes.
