@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.adapters.db.session import get_db
-from src.apps.api.schemas.tenants import TenantCreate, TenantRead
+from src.apps.api.schemas.tenants import TenantRead
 from src.domain.tenancy.service import TenantService
 
 router = APIRouter(prefix="/tenants", tags=["tenants"])
@@ -25,7 +25,7 @@ def get_tenant(tenant_id: int, db: Session = Depends(get_db)) -> TenantRead:
     service = TenantService(db)
     tenant = service.get_by_id(tenant_id)
     if tenant is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     return tenant
 
 
@@ -36,13 +36,7 @@ def get_tenant_by_key(
     service = TenantService(db)
     tenant = service.get_by_api_key_hash(api_key_hash)
     if tenant is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     return tenant
 
 
-@router.post("", response_model=TenantRead, status_code=status.HTTP_201_CREATED)
-def create_tenant(
-    payload: TenantCreate, db: Session = Depends(get_db)
-) -> TenantRead:
-    service = TenantService(db)
-    return service.create(name=payload.name, api_key_hash=payload.api_key_hash)

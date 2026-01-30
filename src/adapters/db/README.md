@@ -19,3 +19,9 @@ and persistence logic out of the domain and API layers.
 
 This separation keeps domain logic independent of the database and makes it
 easier to test or swap database implementations later.
+
+## Admin script
+
+Tenant creation is handled via a server-side script in
+`scripts/admin/create_tenant.py`
+so it is not exposed through the public API.
