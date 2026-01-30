@@ -8,7 +8,7 @@ from fastapi import Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 
 from src.adapters.db.session import get_db
-from src.domain.tenancy.service import TenantService
+from src.domain.services.tenant_service import TenantService
 
 
 def get_current_tenant(

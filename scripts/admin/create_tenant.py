@@ -9,7 +9,7 @@ import secrets
 from sqlalchemy.orm import Session
 
 from src.adapters.db.session import SessionLocal, create_engine_from_env
-from src.domain.tenancy.service import TenantService
+from src.domain.services.tenant_service import TenantService
 
 
 def _create_session() -> Session:
