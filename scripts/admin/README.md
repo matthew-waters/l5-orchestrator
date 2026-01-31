@@ -9,3 +9,13 @@ Run:
 ```bash
 python -m scripts.admin.create_tenant "Tenant Name"
 ```
+
+## create_fleet.py
+
+Creates a fleet record (admin only).
+
+Run:
+
+```bash
+python -m scripts.admin.create_fleet "Fleet Name" '{"key":"value"}' --description "Optional"
+```
